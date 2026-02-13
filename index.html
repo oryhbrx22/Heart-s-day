@@ -9,54 +9,40 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  color:#111;min-height:100vh;display:flex;
-  justify-content:center;align-items:center;
-  background:#FFDAE9;overflow:auto;padding:24px
+  min-height:100vh;display:flex;justify-content:center;align-items:center;
+  background:#FFDAE9;padding:24px;overflow:hidden
 }
 #envelopeStage{
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  min-height:100vh;position:fixed;inset:0;z-index:10
+  display:flex;justify-content:center;align-items:center;
+  position:fixed;inset:0;z-index:10
 }
 body.show-modal .container{display:flex}
 .container{
   display:none;flex-direction:column;text-align:center;
   background:white;padding:40px 36px;border-radius:16px;
   box-shadow:0 10px 30px rgba(0,0,0,0.2);
-  max-width:650px;min-height:520px;
-  max-height:calc(100vh - 48px);
-  overflow-y:auto;transition:.3s
+  max-width:650px;min-height:520px
 }
-.modal-inner{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center}
-.modal-view{display:none;opacity:0;transition:.25s}
+.modal-view{display:none;opacity:0;transition:.3s}
 .modal-view.visible{display:block;opacity:1}
-
-/* Envelope */
 .envelope{
-  position:relative;width:220px;height:160px;
-  background:#f5e6d3;border-radius:4px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.12);
-  cursor:pointer
+  width:220px;height:160px;background:#f5e6d3;
+  position:relative;border-radius:4px;cursor:pointer
 }
 .envelope-flap{
-  position:absolute;inset:0;
-  background:linear-gradient(165deg,#e8d5c4 0%,#d4c4a8 45%,#c9b89a 100%);
+  position:absolute;inset:0;background:#e8d5c4;
   clip-path:polygon(0 0,50% 50%,100% 0);
-  transform-origin:top center;
-  transition:.8s
+  transform-origin:top center;transition:.8s
 }
 .envelope.opening .envelope-flap{transform:rotateX(-170deg)}
 .envelope-heart{
-  position:absolute;top:57%;left:57%;
-  transform:translate(-50%,-50%);
-  font-size:28px;color:#c41e3a
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);font-size:30px
 }
-
-/* Puzzle */
-.modal-title{font-size:24px;margin:16px 0 32px}
+.modal-title{font-size:24px;margin-bottom:24px}
 .puzzle-container{
-  width:40vh;max-width:100%;
-  background:#f5f5f5;padding:10px;border-radius:12px
+  width:300px;margin:0 auto;background:#f5f5f5;
+  padding:10px;border-radius:12px
 }
 .puzzle-grid{
   display:grid;grid-template-columns:repeat(3,1fr);
@@ -67,28 +53,28 @@ body.show-modal .container{display:flex}
   border-radius:8px;cursor:pointer
 }
 .puzzle-tile.empty{background:none;cursor:default}
-
 .puzzle-reveal-text{opacity:0;transition:.4s;margin-top:20px}
 .puzzle-reveal-text.show{opacity:1}
-
-.yes-only-btn{
-  font-size:20px;padding:12px 24px;
-  background:#FFDAE9;border:none;
-  border-radius:50px;cursor:pointer;
-  font-weight:600;transition:.2s
+button{
+  font-size:18px;padding:10px 20px;border-radius:50px;
+  border:none;cursor:pointer;font-weight:600;transition:.2s
 }
-.yes-only-btn:hover{transform:scale(1.05)}
-
-.container--success{background:transparent;box-shadow:none}
-.success-gif-wrap{margin:0 auto 24px;border-radius:12px;overflow:hidden;max-width:420px}
+#yesBtn{background:#FFDAE9}
+#noBtn{background:#eee}
+.success-gif-wrap{max-width:420px;margin:0 auto 20px;border-radius:12px;overflow:hidden}
 .success-gif-wrap img{width:100%}
-.reset-btn{background:none;border:none;color:#666;text-decoration:underline;cursor:pointer}
+.reset-btn{background:none;text-decoration:underline;color:#666}
+.confetti{position:fixed;width:10px;height:10px;pointer-events:none}
+@keyframes confetti-fall{to{transform:translateY(100vh) rotate(360deg);opacity:0}}
 </style>
 </head>
-
 <body>
 
-<!-- ENVELOPE -->
+<!-- 🎵 BACKGROUND MUSIC -->
+<audio id="bgm" loop>
+  <source src="audio/bgm.mp3" type="audio/mpeg">
+</audio>
+
 <div id="envelopeStage">
   <div class="envelope" id="envelope">
     <div class="envelope-heart">❤️</div>
@@ -97,61 +83,60 @@ body.show-modal .container{display:flex}
 </div>
 
 <div class="container">
-  <div class="modal-inner">
-
-    <!-- PUZZLE VIEW -->
-    <div id="puzzleView" class="modal-view">
-      <h1 class="modal-title">Dear Regine...</h1>
-
-      <div class="puzzle-container">
-        <div class="puzzle-grid" id="puzzleGrid"></div>
-      </div>
-
-      <div class="puzzle-reveal-text" id="puzzleRevealText">
-        <p>...you complete me.</p>
-        <p><strong>Will you be my Valentine?</strong></p>
-        <div style="display:flex;gap:12px;justify-content:center;margin-top:12px;">
-          <button class="yes-only-btn" id="yesBtn">Yes</button>
-          <button class="yes-only-btn" id="noBtn" style="background:#eee;">No</button>
-        </div>
+  <div id="puzzleView" class="modal-view">
+    <h1 class="modal-title">Dear Regine...</h1>
+    <div class="puzzle-container">
+      <div class="puzzle-grid" id="puzzleGrid"></div>
+    </div>
+    <div class="puzzle-reveal-text" id="puzzleRevealText">
+      <p>...you complete me.</p>
+      <p><strong>Will you be my Valentine?</strong></p>
+      <div style="margin-top:15px;display:flex;gap:12px;justify-content:center;">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
       </div>
     </div>
+  </div>
 
-    <!-- SUCCESS VIEW -->
-    <div id="successView" class="modal-view">
-      <p class="modal-title">Yay, I can't wait!</p>
-      <div class="success-gif-wrap">
-        <img src="Yes.gif" alt="">
-      </div>
-      <button class="reset-btn" id="resetBtn">Reset</button>
+  <div id="successView" class="modal-view">
+    <p class="modal-title">Yay, I can't wait!</p>
+    <div class="success-gif-wrap">
+      <img src="Yes.gif">
     </div>
+    <button class="reset-btn" id="resetBtn">Reset</button>
+  </div>
 
-    <!-- NO VIEW -->
-    <div id="noView" class="modal-view">
-      <p class="modal-title">Aww... are you sure? 🥺</p>
-      <div class="success-gif-wrap">
-        <img id="noGif" src="no1.gif" alt="">
-      </div>
-      <p>The YES is still waiting for you 💖</p>
+  <div id="noView" class="modal-view">
+    <p class="modal-title" id="noTitle">Aww... are you sure? 🥺</p>
+    <div class="success-gif-wrap">
+      <img id="noGif" src="no1.gif">
     </div>
-
+    <p id="noSubText">The YES is still waiting for you 💖</p>
   </div>
 </div>
 
 <script>
 const envelope=document.getElementById('envelope');
 const envelopeStage=document.getElementById('envelopeStage');
-const puzzleGrid=document.getElementById('puzzleGrid');
 const puzzleView=document.getElementById('puzzleView');
 const successView=document.getElementById('successView');
 const noView=document.getElementById('noView');
-const container=document.querySelector('.container');
+const puzzleGrid=document.getElementById('puzzleGrid');
+const yesBtn=document.getElementById('yesBtn');
+const noBtn=document.getElementById('noBtn');
+const bgm=document.getElementById('bgm');
 
 let noClickCount=0;
 const noGifs=["no1.gif","no2.gif","no3.gif"];
+const noMessages=[
+{title:"Aww... are you sure? 🥺",sub:"The YES is still waiting for you 💖"},
+{title:"Really sure? 😢",sub:"I can wait... but my heart can't 💔"},
+{title:"Last chance... 😭",sub:"Press YES na pleaseee 🥹💘"}
+];
 
-/* ENVELOPE */
 envelope.addEventListener('click',()=>{
+  bgm.volume=0.4;
+  bgm.play().catch(()=>{});
   envelope.classList.add('opening');
   setTimeout(()=>{
     envelopeStage.style.display='none';
@@ -160,46 +145,95 @@ envelope.addEventListener('click',()=>{
   },800);
 });
 
-/* SIMPLE PUZZLE AUTO COMPLETE */
-for(let i=1;i<=9;i++){
-  const tile=document.createElement('div');
-  tile.className='puzzle-tile';
-  tile.style.backgroundImage=`url('images/tile-${i}.png')`;
-  puzzleGrid.appendChild(tile);
+/* SLIDING PUZZLE */
+let currentState=[1,2,3,4,5,6,7,8,9];
+const EMPTY=9;
+function init(){shuffle();render();}
+function shuffle(){
+  for(let i=0;i<20;i++){
+    const e=currentState.indexOf(EMPTY);
+    const m=getMoves(e);
+    const r=m[Math.floor(Math.random()*m.length)];
+    [currentState[e],currentState[r]]=[currentState[r],currentState[e]];
+  }
 }
-setTimeout(()=>document.getElementById('puzzleRevealText').classList.add('show'),1500);
+function getMoves(i){
+  const m=[];const r=Math.floor(i/3);const c=i%3;
+  if(r>0)m.push(i-3);
+  if(r<2)m.push(i+3);
+  if(c>0)m.push(i-1);
+  if(c<2)m.push(i+1);
+  return m;
+}
+function render(){
+  puzzleGrid.innerHTML='';
+  currentState.forEach((n,i)=>{
+    const d=document.createElement('div');
+    d.className='puzzle-tile';
+    if(n===EMPTY)d.classList.add('empty');
+    else{
+      d.style.backgroundImage=`url(images/tile-${n}.png)`;
+      d.onclick=()=>move(i);
+    }
+    puzzleGrid.appendChild(d);
+  });
+}
+function move(i){
+  const e=currentState.indexOf(EMPTY);
+  if(getMoves(e).includes(i)){
+    [currentState[e],currentState[i]]=[currentState[i],currentState[e]];
+    render();
+    if(isSolved())setTimeout(()=>document.getElementById('puzzleRevealText').classList.add('show'),300);
+  }
+}
+function isSolved(){return currentState.every((v,i)=>v===i+1);}
+init();
 
 /* YES */
-document.getElementById('yesBtn').addEventListener('click',()=>{
-  container.classList.add('container--success');
+yesBtn.onclick=()=>{
+  runConfetti(6000);
+  bgm.pause();
   puzzleView.classList.remove('visible');
   successView.classList.add('visible');
-});
+};
 
-/* NO with 3 GIF stages */
-document.getElementById('noBtn').addEventListener('click',()=>{
+/* NO */
+noBtn.onclick=()=>{
   noClickCount++;
-  const noGif=document.getElementById("noGif");
-
-  if(noClickCount<=noGifs.length){
-    noGif.src=noGifs[noClickCount-1];
-  }else{
-    noGif.src=noGifs[noGifs.length-1];
-  }
-
+  let index=Math.min(noClickCount-1,noGifs.length-1);
+  document.getElementById('noGif').src=noGifs[index];
+  document.getElementById('noTitle').textContent=noMessages[index].title;
+  document.getElementById('noSubText').textContent=noMessages[index].sub;
+  yesBtn.style.transform=`scale(${1+noClickCount*0.15})`;
+  noBtn.style.transform=`scale(${Math.max(0.6,1-noClickCount*0.1)})`;
   puzzleView.classList.remove('visible');
   noView.classList.add('visible');
-
   setTimeout(()=>{
     noView.classList.remove('visible');
     puzzleView.classList.add('visible');
-  },3000);
-});
+  },2500);
+};
 
-/* RESET */
-document.getElementById('resetBtn').addEventListener('click',()=>{
-  window.location.reload();
-});
+document.getElementById('resetBtn').onclick=()=>location.reload();
+
+/* CONFETTI */
+function runConfetti(ms){
+  const end=Date.now()+ms;
+  (function tick(){
+    if(Date.now()<end){
+      const c=document.createElement('div');
+      c.className='confetti';
+      c.style.left=Math.random()*100+'%';
+      c.style.top='-10px';
+      c.style.background=['#f093fb','#f5576c','#ffd700','#4facfe','#FFDAE9'][Math.floor(Math.random()*5)];
+      const d=2+Math.random()*2;
+      c.style.animation=`confetti-fall ${d}s linear`;
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),d*1000);
+      setTimeout(tick,80);
+    }
+  })();
+}
 </script>
 
 </body>
