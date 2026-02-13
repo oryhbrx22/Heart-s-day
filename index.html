@@ -79,6 +79,13 @@ button{
 .success-gif-wrap{max-width:420px;margin:0 auto 20px;border-radius:12px;overflow:hidden}
 .success-gif-wrap img{width:100%}
 .reset-btn{background:none;text-decoration:underline;color:#666}
+.side-note{
+  opacity:0;
+  transition:opacity 0.6s;
+  margin-top:10px;
+  font-size:16px;
+  color:#555;
+}
 .confetti{position:fixed;width:10px;height:10px;pointer-events:none}
 @keyframes confetti-fall{to{transform:translateY(100vh) rotate(360deg);opacity:0}}
 </style>
@@ -116,6 +123,7 @@ button{
 
   <div id="successView" class="modal-view">
     <p class="modal-title">Yay, I can't wait!</p>
+    <p class="side-note">(Read me:) I can’t wait for our special online date 💖 Even if we can’t meet yet and we’re on a budget, I’ve planned something fun for us. Circumstances won’t stop me from making your day special! 🎉</p>
     <div class="success-gif-wrap">
       <img src="Yes.gif">
     </div>
@@ -213,10 +221,14 @@ function isSolved(){return currentState.every((v,i)=>v===i+1);}
 init();
 
 /* YES */
-yesBtn.onclick=()=>{
+yesBtn.onclick = () => {
   runConfetti(6000);
   puzzleView.classList.remove('visible');
   successView.classList.add('visible');
+
+  // Fade in side note
+  const note = successView.querySelector('.side-note');
+  setTimeout(() => { note.style.opacity = 1; }, 400);
 };
 
 /* NO */
